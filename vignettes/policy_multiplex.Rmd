@@ -18,11 +18,13 @@ First, install the package from GitHub. To do so, you will need the `devtools` p
 ```{r, eval=FALSE}
 library(devtools)
 install_github("tedhchen/multilayer.ergm", build_vignettes = TRUE)
+
 ```
 
 Of course, we want to load the package, which will also load the `network`, `ergm`, and `statnet.common` packages.
 ```{r, message=FALSE}
 library(multilayer.ergm)
+
 ```
 
 ## ChemG Policy Network
@@ -30,6 +32,7 @@ In this exercise, we will be using data from the policy network surrounding legi
 
 ```{r, eval=FALSE}
 help(chemg_data)
+
 ```
 
 From the help file, we can see that there are five network data files. Each of these networks have the same number of nodes, representing the 30 actors in this policy system. We might study these networks independently as monoplex networks, but to understand the entire policy process, which is a system that includes interactions within and across all of these networks, we need to move to the multilayer approach.
@@ -41,6 +44,7 @@ A multilayer network has multiple layers, which is defined by the user. Technica
 
 ```{r, eval=FALSE}
 network%v%'layer.mem' <- layer.ids
+
 ```
 
 ### Policy Multiplex Network
@@ -71,6 +75,7 @@ First, we create the network.
 ```{r}
 scinet <- network(sci)
 scinet
+
 ```
 
 Then fit an ERGM using the `ergm` function from the `ergm` package. Let us include the baseline `edge` term, a term for how similar a pair of actors' preferences are (`edgecov(prefsim)`), and a term for the tendency for actors to reciprocate scientific communication (`mutual`).
@@ -116,7 +121,7 @@ summary(mod.within)
 
 Remember that layer 1 is `sci` and layer 2 is `infrep`. From the output we see that the coefficients for the scientific layer is effectively the same as those from the monoplex model. (In fact, the only difference is due to randomness in the estimation procedure.) This is to be expected, because while two layers are included, we did not model any dependence between them, meaning that they do not influence each other at all.
 
-### Policy Multiplex, Within-layer Model
+### Policy Multiplex, cross-layer Model
 Now, let us fit a model that includes cross-layer dependence terms. Specifically, let us include, using `duplexdyad`, a term for cross-layer reinforcement and a term for cross-layer reciprocity. From the code below, we see that the `duplexdyad` term takes an argument `layers = c(1, 2)`. It means that the two layers included in the dependence term are layers 1 and 2. This format is common to cross-layer dependence terms in the `multilayer.ergm` package.
 
 ```{r, message=FALSE}
